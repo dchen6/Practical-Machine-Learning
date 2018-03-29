@@ -16,23 +16,33 @@ library(data.table)
 
 
 ```{r download data, include=FALSE}
-setwd("/Users/DE/Desktop/Coursera/Machine Learning")
+setwd("/Users/DE/Desktop/Coursera/Machine Learning/Course Project")
+if (!file.exists("training.csv")) {
 download.file(
     url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv",
-    destfile = "training.csv")
+    destfile = "training.csv")}
+if (!file.exists("test.csv")) {
 download.file(
     url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv",
-    destfile = "test.csv")
-training = read.csv("training.csv")
-test = read.csv("test.csv")                     
+    destfile = "test.csv")}
+train = read.csv("training.csv", na.strings = c("NA", ""))
+test = read.csv("test.csv", na.strings = c("NA", ""))                     
 ```
 
 ```{r data manipulation, include=FALSE}
-mdata = training[-1,]
-test = test[-1,]
+mdata = train[,-1]
+test = test[,-1]
 set.seed(1013)
 train_index = createDataPartition(y = mdata$classe, p = 0.6, list = F)
 training = mdata[train_index,]
 validation = mdata[-train_index,]
+```
 
+```{r eda}
+missing_rows = sapply(training, function(x){sum(is.na(x)|is.nan(x))/length(x)})
+missing_rows[missing_rows < 0.5]
+candidate_var = names(missing_rows[missing_rows < 0.5])
+nums = sapply(training[,candidate_var], is.numeric)
+M = abs(cor(training[,names(nums[nums==TRUE])]))
+findCorrelation(M, cutoff = 0.8, verbose = F, names = T, exact = T)
 ```
