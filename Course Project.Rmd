@@ -1,0 +1,38 @@
+---
+title: "Practical Machine Learning Course Project"
+author: "De Chen"
+date: "3/25/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(cache = TRUE)
+library(ggplot2)
+library(caret)
+library(dplyr)
+library(data.table)
+```
+
+
+```{r download data, include=FALSE}
+setwd("/Users/DE/Desktop/Coursera/Machine Learning")
+download.file(
+    url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv",
+    destfile = "training.csv")
+download.file(
+    url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv",
+    destfile = "test.csv")
+training = read.csv("training.csv")
+test = read.csv("test.csv")                     
+```
+
+```{r data manipulation, include=FALSE}
+mdata = training[-1,]
+test = test[-1,]
+set.seed(1013)
+train_index = createDataPartition(y = mdata$classe, p = 0.6, list = F)
+training = mdata[train_index,]
+validation = mdata[-train_index,]
+
+```
